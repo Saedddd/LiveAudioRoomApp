@@ -1,24 +1,57 @@
+import { useForm, SubmitHandler } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+
+interface IFormValues {
+  username: string;
+  name: string;
+}
+
 const SignIn = () => {
+  const schema = yup.object().shape({
+    username: yup
+      .string()
+      .required("Username in required")
+      .matches(/^[a-zA-Z0-9_.@-]+$/, "Invalid"),
+    name: yup.string().required("Name in required"),
+  });
+
+  const onSubmit: SubmitHandler<IFormValues> = (data, event) => {
+    event?.preventDefault();
+    const { username, name } = data;
+    console.log(username, name);
+  };
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IFormValues>({ resolver: yupResolver(schema) });
+
   return (
     <section className="flex flex-col gap-10">
       <h1>Welcome to Audio Chat</h1>
-      <form action="" className="flex flex-col justify-center m-auto gap-4">
-        <div className="">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col justify-center m-auto gap-2">
+        <div>
           <label htmlFor="">UserName: </label>
           <input
+            {...register("username")}
             type="text"
             placeholder="Type here UserName"
             className="input input-bordered input-primary w-full max-w-xs"
           />
+          {errors.username && <p className="text-red-600 m-1">{errors.username.message}</p>}
         </div>
 
-        <div className="">
+        <div>
           <label htmlFor="">Name: </label>
           <input
+            {...register("name")}
             type="text"
             placeholder="Type here Name"
             className="input input-bordered input-primary w-full max-w-xs"
           />
+          {errors.name && <p className="text-red-600 m-1">{errors.name.message}</p>}
         </div>
 
         <button type="submit" className="btn btn-outline btn-primary">
