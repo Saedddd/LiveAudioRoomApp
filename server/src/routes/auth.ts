@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express";
 import { client } from "../stream-client";
-import { UserObject } from "@stream-io/node-sdk";
+import { UserRequest } from "@stream-io/node-sdk";
 
 
 
@@ -13,10 +13,10 @@ router.post("/createUser", async (req: Request, res: Response) => {
         return res.status(400).json({message:"Required fields wwere empty"})
     }
 
-    const newUser: UserObject = {
+    const newUser: UserRequest = {
         id: username,
         role: "user",
-        name: name,
+        name,
         image,
     }
 
@@ -26,8 +26,10 @@ router.post("/createUser", async (req: Request, res: Response) => {
         }
     })
 
+    const expiry = Math.floor(Date.now()/1000) + 24 * 60 * 60
+    const token = client.createToken(username, expiry);
 
-
+    return res.status(200).json({token, username, name})
 })
 
 export default router;
