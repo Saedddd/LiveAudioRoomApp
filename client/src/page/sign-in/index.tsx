@@ -1,6 +1,9 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import Cookies from "universal-cookie";
+
+import { PEOPLES_IMAGES } from "../../shared/Images";
 
 interface IFormValues {
   username: string;
@@ -8,6 +11,8 @@ interface IFormValues {
 }
 
 const SignIn = () => {
+  const cookies = new Cookies();
+
   const schema = yup.object().shape({
     username: yup
       .string()
@@ -16,10 +21,35 @@ const SignIn = () => {
     name: yup.string().required("Name in required"),
   });
 
-  const onSubmit: SubmitHandler<IFormValues> = (data, event) => {
-    event?.preventDefault();
+  const onSubmit: SubmitHandler<IFormValues> = async data => {
     const { username, name } = data;
-    console.log(username, name);
+
+    const response = await fetch("http://localhost:3001/auth/createUser", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username,
+        name,
+        image: PEOPLES_IMAGES[Math.floor(Math.random() * PEOPLES_IMAGES.length)],
+      }),
+    });
+
+    if (!response.ok) {
+      alert("Error creating user");
+      return;
+    }
+
+    const responseData = await response.json();
+    console.log(responseData);
+
+    //Истечение токенов
+    const expires = new Date();
+    expires.setDate(expires.getDate() + 1);
+    cookies.set("token", responseData.token, { expires });
+    cookies.set("username", responseData.username, { expires });
+    cookies.set("name", responseData.name, { expires });
   };
 
   const {
