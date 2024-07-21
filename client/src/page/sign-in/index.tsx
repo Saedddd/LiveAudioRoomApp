@@ -55,7 +55,7 @@ const SignIn = () => {
     };
 
     const myClient = new StreamVideoClient({
-      apiKey: "myy5dxg34vmq",
+      apiKey: import.meta.env.VITE_API_KEY,
       user,
       token: responseData.token,
     });
