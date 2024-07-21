@@ -2,9 +2,11 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import Cookies from "universal-cookie";
+import { StreamVideoClient, User } from "@stream-io/video-react-sdk";
 
 import { PEOPLES_IMAGES } from "../../shared/Images";
-import { StreamVideoClient, User } from "@stream-io/video-react-sdk";
+import { useUser } from "../../shared/UserContext/ui/user-context";
+import { useNavigate } from "react-router-dom";
 
 interface IFormValues {
   username: string;
@@ -13,6 +15,8 @@ interface IFormValues {
 
 const SignIn = () => {
   const cookies = new Cookies();
+  const { setClient, setUser } = useUser();
+  const navigate = useNavigate();
 
   const schema = yup.object().shape({
     username: yup
@@ -62,6 +66,10 @@ const SignIn = () => {
     cookies.set("token", responseData.token, { expires });
     cookies.set("username", responseData.username, { expires });
     cookies.set("name", responseData.name, { expires });
+
+    setClient(myClient);
+    setUser({ name, username });
+    navigate("/");
   };
 
   const {
