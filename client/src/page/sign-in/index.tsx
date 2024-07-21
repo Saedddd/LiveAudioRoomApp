@@ -4,6 +4,7 @@ import * as yup from "yup";
 import Cookies from "universal-cookie";
 
 import { PEOPLES_IMAGES } from "../../shared/Images";
+import { StreamVideoClient, User } from "@stream-io/video-react-sdk";
 
 interface IFormValues {
   username: string;
@@ -43,6 +44,17 @@ const SignIn = () => {
 
     const responseData = await response.json();
     console.log(responseData);
+
+    const user: User = {
+      id: username,
+      name,
+    };
+
+    const myClient = new StreamVideoClient({
+      apiKey: "myy5dxg34vmq",
+      user,
+      token: responseData.token,
+    });
 
     //Истечение токенов
     const expires = new Date();
