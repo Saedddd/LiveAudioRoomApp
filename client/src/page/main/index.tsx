@@ -1,7 +1,9 @@
 import { StreamVideo } from "@stream-io/video-react-sdk";
-import { useUser } from "../../shared/UserContext/ui/user-context";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import CryptoJS from "crypto-js";
+
+import { useUser } from "../../shared/UserContext/ui/user-context";
 
 interface NewRoom {
   name: string;
@@ -17,12 +19,17 @@ const MainPage = () => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const navigate = useNavigate();
 
+  const hashRoomName = (roomName: string): string => {
+    const hash = CryptoJS.SHA256(roomName).toString(CryptoJS.enc.Base64);
+    return hash.replace(/[^A-Za-z0-9_-]/g, "");
+  };
+
   const createRoom = async () => {
     const { name, description } = newRoom;
 
     if (!client || !name || !description || !user) return;
 
-    const call = client.call("audio_room", name);
+    const call = client.call("audio_room", hashRoomName(name));
     await call.join({
       create: true,
       data: {
@@ -38,10 +45,10 @@ const MainPage = () => {
   };
 
   return (
-    <StreamVideo client={client}>
+    <StreamVideo client={client!}>
       <section className="text-xl">
         <h1>Welcome, {user?.name}</h1>
-        <form onSubmit={createRoom} className="flex flex-col gap-3 text-center items-center pt-6">
+        <div onSubmit={createRoom} className="flex flex-col gap-3 text-center items-center pt-6">
           <h2>Create Your Own Room</h2>
           <input
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -60,10 +67,10 @@ const MainPage = () => {
             className="input input-bordered input-primary w-full max-w-xs"
           />
 
-          <button type="submit" className="btn btn-outline btn-primary">
-            Sign in
+          <button onClick={createRoom} className="btn btn-outline btn-primary">
+            Create room
           </button>
-        </form>
+        </div>
       </section>
     </StreamVideo>
   );
