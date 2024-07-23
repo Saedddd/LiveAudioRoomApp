@@ -1,4 +1,4 @@
-import { StreamVideoClient } from "@stream-io/video-react-sdk";
+import { Call, StreamVideoClient } from "@stream-io/video-react-sdk";
 import { createContext, useContext, useState } from "react";
 
 interface User {
@@ -11,6 +11,8 @@ interface UserContextProvider {
   setUser: (user: User | null) => void;
   client: StreamVideoClient | undefined;
   setClient: (client: StreamVideoClient | undefined) => void;
+  call: Call | undefined;
+  setCall: (call: Call | undefined) => void;
 }
 
 const UserContext = createContext<UserContextProvider | undefined>(undefined);
@@ -21,9 +23,14 @@ interface UserProvideProps {
 
 export const UserProvider = (props: UserProvideProps) => {
   const [user, setUser] = useState<User | null>(null);
+  const [call, setCall] = useState<Call>();
   const [client, setClient] = useState<StreamVideoClient>();
 
-  return <UserContext.Provider value={{ user, setUser, client, setClient }}>{props.children}</UserContext.Provider>;
+  return (
+    <UserContext.Provider value={{ user, setUser, client, setClient, call, setCall }}>
+      {props.children}
+    </UserContext.Provider>
+  );
 };
 
 // eslint-disable-next-line react-refresh/only-export-components

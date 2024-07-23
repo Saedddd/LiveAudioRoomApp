@@ -1,6 +1,6 @@
 import { StreamVideo } from "@stream-io/video-react-sdk";
 import { useUser } from "../../shared/UserContext/ui/user-context";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 interface NewRoom {
@@ -9,10 +9,13 @@ interface NewRoom {
 }
 
 const MainPage = () => {
-  const { client, user } = useUser();
+  const { client, user, setCall } = useUser();
   const [newRoom, setNewRoom] = useState<NewRoom>({ name: "", description: "" });
 
   if (!client) return <Navigate to="/sign-in" />;
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const navigate = useNavigate();
 
   const createRoom = async () => {
     const { name, description } = newRoom;
@@ -30,6 +33,8 @@ const MainPage = () => {
         },
       },
     });
+    setCall(call);
+    navigate("/room");
   };
 
   return (
