@@ -11,10 +11,8 @@ interface NewRoom {
 }
 
 const MainPage = () => {
-  const { client, user, setCall } = useUser();
+  const { client, user, setCall, isLoadingClient } = useUser();
   const [newRoom, setNewRoom] = useState<NewRoom>({ name: "", description: "" });
-
-  if (!client) return <Navigate to="/sign-in" />;
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const navigate = useNavigate();
@@ -43,6 +41,10 @@ const MainPage = () => {
     setCall(call);
     navigate("/room");
   };
+
+  if (isLoadingClient) return <h1>Loading...</h1>;
+
+  if ((!isLoadingClient && !user) || (!isLoadingClient && !client)) return <Navigate to="/sign-in" />;
 
   return (
     <StreamVideo client={client!}>
