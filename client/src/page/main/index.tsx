@@ -94,6 +94,17 @@ const MainPage = () => {
     }
   };
 
+  const joinCall = async (callID: string) => {
+    const call = client?.call("audio_room", callID);
+    try {
+      await call?.join();
+      setCall(call);
+      navigate("/room");
+    } catch (err) {
+      alert("Error while joining call");
+    }
+  };
+
   if (isLoadingClient) return <h1>Loading...</h1>;
   if ((!isLoadingClient && !user) || (!isLoadingClient && !client)) return <Navigate to="/sign-in" />;
 
@@ -129,7 +140,11 @@ const MainPage = () => {
               <h2>Available Rooms</h2>
               <div className="">
                 {availableRooms.map(room => (
-                  <div className="card bg-primary text-primary-content w-72 text-left" key={room.id}>
+                  <div
+                    className="card bg-primary text-primary-content w-72 text-left"
+                    onClick={() => joinCall(room.id)}
+                    key={room.id}
+                  >
                     <div className="card-body">
                       <h1 className="card-title">{room.title}</h1>
                       <h2>{room.description}</h2>
