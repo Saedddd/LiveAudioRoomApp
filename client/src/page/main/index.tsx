@@ -33,19 +33,19 @@ const MainPage = () => {
 
   useEffect(() => {
     if (client) fetchListOfCalls();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [client]);
 
   const hashRoomName = (roomName: string): string => {
     const hash = CryptoJS.SHA256(roomName).toString(CryptoJS.enc.Base64);
-    return hash.replace(/[^A-Za-z0-9_-]/g, "");
+    return hash.replace(/[^a-zA-Z0-9_-]/g, "");
   };
 
   const createRoom = async () => {
     const { name, description } = newRoom;
-
-    if (!client || !name || !description || !user) return;
-
-    const call = client.call("audio_room", hashRoomName(name));
+    if (!client || !user || !name || !description) return;
+    const roomID = hashRoomName(name);
+    const call = client.call("audio_room", roomID);
     await call.join({
       create: true,
       data: {
@@ -57,7 +57,7 @@ const MainPage = () => {
       },
     });
     setCall(call);
-    navigate("/room");
+    navigate(`/room/${roomID}`);
   };
 
   const fetchListOfCalls = async () => {
