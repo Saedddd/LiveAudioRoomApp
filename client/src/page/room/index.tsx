@@ -2,6 +2,7 @@ import { OwnCapability, useCallStateHooks, useRequestPermission } from "@stream-
 import Controls from "./controls";
 import { useUser } from "../../shared/UserContext/ui/user-context";
 import PermissionRequestPanel from "./permission-request";
+import Participants from "./participants";
 
 const Room = () => {
   const { useCallCustomData, useParticipants, useCallCreatedBy } = useCallStateHooks();
@@ -18,6 +19,7 @@ const Room = () => {
       <h1>{custom?.title ?? "TITLE"} H2</h1>
       <h2>{custom?.description ?? "Description"} H3</h2>
       <p>{participants.length} participants</p>
+      <Participants />
       {user?.username === createdBy?.id && <PermissionRequestPanel />}
       {hasPermission ? (
         <Controls />
